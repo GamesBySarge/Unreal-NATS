@@ -1,3 +1,0 @@
-[submodule ".\\Source\\GBSNats\\nats.c"]
-	path = .\\Source\\GBSNats\\nats.c
-	url = https://github.com/nats-io/nats.c.git

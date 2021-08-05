@@ -2,17 +2,17 @@ using System.IO;
 
 namespace UnrealBuildTool.Rules
 {
-	public class Nats : ModuleRules
+	public class GBSNats : ModuleRules
 	{
-		public Nats(ReadOnlyTargetRules Target) : base(Target)
+		public GBSNats(ReadOnlyTargetRules Target) : base(Target)
 		{
 			PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 			PrecompileForTargets = PrecompileTargetsType.Any;
 
 			PrivateIncludePaths.AddRange(
 				new string[] {
-					"Nats/Private",
-          "../ThirdParty/nats/nats.c/src"
+					"GBSNats/Private",
+          "GBSNats/nats.c/src"
 					// ... add other private include paths required here ...
 				});
 

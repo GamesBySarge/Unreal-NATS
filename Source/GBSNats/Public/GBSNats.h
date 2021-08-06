@@ -33,9 +33,9 @@ public:
 	}
 
 	/** Getter for internal settings object to support runtime configuration changes */
-	UGBSNatsSettings* GetSettings() const;
+	// UGBSNatsSettings* GetSettings() const;
 
 protected:
 	/** Module settings */
-	UGBSNatsSettings* ModuleSettings;
+	// UGBSNatsSettings* ModuleSettings;
 };

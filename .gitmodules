@@ -1,3 +1,6 @@
 [submodule "ThirdParty/nats.c"]
 	path = ThirdParty/nats.c
 	url = https://github.com/nats-io/nats.c.git
+  branch = main
+  update = merge
+  

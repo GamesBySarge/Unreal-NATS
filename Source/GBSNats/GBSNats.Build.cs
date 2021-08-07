@@ -56,10 +56,17 @@ namespace UnrealBuildTool.Rules
       }
     }
 
+    private string CMakeProgram
+    {
+      get
+      {
+        return "~/deps/cmake-install/bin/cmake";
+      }
+    }
+
     private string CreateCMakeBuildCommand(string buildDirectory,
                                            string buildType)
     {
-      const string program = "cmake.exe";
       // YourGame/Plugins/GBSNats/Source/GBSNats
       var currentDir = ModulePath;
       var rootDirectory = Path.Combine(currentDir,
@@ -67,32 +74,19 @@ namespace UnrealBuildTool.Rules
       var installPath = Path.Combine(ThirdPartyPath, "generated");
       var sourceDir = Path.Combine(ThirdPartyPath, "nats.c");
 
-      // TODO Don't hard-code this
-      // string UEThirdPartySourceDirectory = Target.UEThirdPartySourceDirectory
-      string UEThirdPartySourceDirectory = "D:\\UnrealEngine\\Engine\\Source\\ThirdParty";
-      // string OpenSSLPath = Path.Combine(UEThirdPartySourceDirectory, "OpenSSL", "1.0.1s");
-      // string OpenSSLInclude = Path.Combine(OpenSSLPath, "Include", "Win64", "VS2015");
-      // string OpenSSLLibrary = Path.Combine(OpenSSLPath, "Lib", "Win64", "VS2015", buildType);
-
-      var arguments = " -G \"Visual Studio 16 2019\"" +
+      var arguments = " -G \"Unix Makefiles\"" +
                       " -S " + sourceDir +
                       " -B " + buildDirectory +
-                      " -A x64 " +
-                      " -T host=x64" +
-                      // " -DOPENSSL_ROOT_DIR=" + OpenSSLPath +
-                      // " -DOPENSSL_INCLUDE_DIR=" + OpenSSLInclude + 
-                      // " -DOPENSSL_CRYPTO_LIBRARY=" + OpenSSLLibrary + 
-                      " -DCMAKE_TOOLCHAIN_FILE=d:/vcpkg/scripts/buildsystems/vcpkg.cmake" +
                       " -DCMAKE_BUILD_TYPE=" + buildType +
                       " -DCMAKE_INSTALL_PREFIX=" + installPath;
 
-      return program + arguments;
+      return CMakeProgram + arguments;
     }
 
     private string CreateCMakeInstallCommand(string buildDirectory,
                                              string buildType)
     {
-      return "cmake.exe --build " + buildDirectory +
+      return CMakeProgram + " --build " + buildDirectory +
              " --target install --config " + buildType;
     }
 
@@ -108,24 +102,26 @@ namespace UnrealBuildTool.Rules
       var configureCommand = CreateCMakeBuildCommand(buildPath,
                                                      buildType);
       var configureCode = ExecuteCommandSync(configureCommand);
-      Console.WriteLine("Command: " + configureCommand);
+      Console.WriteLine("Configure command: " + configureCommand);
 
       if (configureCode != 0)
       {
         Console.WriteLine(
-            "Cannot configure CMake project. Exited with code: "
+            "\nCannot configure CMake project. Exited with code: "
             + configureCode);
 
-        return false;
+        //return false;
       }
 
       var installCommand = CreateCMakeInstallCommand(buildPath,
                                                      buildType);
+      Console.WriteLine("Install command: " + installCommand);
+
       var buildCode = ExecuteCommandSync(installCommand);
       if (buildCode != 0)
       {
         Console.WriteLine("Cannot build project. Exited with code: " + buildCode);
-        return false;
+        //return false;
       }
       return true;
     }

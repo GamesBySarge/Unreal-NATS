@@ -16,12 +16,11 @@ namespace UnrealBuildTool.Rules
 
           new string[] {
           "GBSNats/Private",
-          "../ThirdParty/nats.c/src"
+          "../ThirdParty/nats/Binaries/include"
             // ... add other private include paths required here ...
           });
 
       PublicDependencyModuleNames.AddRange(
-
         new string[]
         {
           "Core",
@@ -35,107 +34,38 @@ namespace UnrealBuildTool.Rules
       // Only build Nats if the target platform is Unix
       if (Target.IsInPlatformGroup(UnrealPlatformGroup.Unix))
       {
-        Definitions.Add("USE_NATS");
         BuildNats(Target);
+        Definitions.Add("USE_NATS");
+        PublicIncludePaths.Add(NatsIncludePath);
+        PublicAdditionalLibraries.Add(NatsLibraryPath + "/libnats_static.a");
       }
-    }
-
-
-
-    private string ModulePath
-    {
-      get { return ModuleDirectory; }
-    }
-
-    private string ThirdPartyPath
-    {
-      get
-      {
-        return Path.GetFullPath(Path.Combine(ModulePath,
-                                            "../../ThirdParty/"));
-      }
-    }
-
-    private string CMakeProgram
-    {
-      get
-      {
-        return "~/deps/cmake-install/bin/cmake";
-      }
-    }
-
-    private string CreateCMakeBuildCommand(string buildDirectory,
-                                           string buildType)
-    {
-      // YourGame/Plugins/GBSNats/Source/GBSNats
-      var currentDir = ModulePath;
-      var rootDirectory = Path.Combine(currentDir,
-                                       "..", "..", "..", "..");
-      var installPath = Path.Combine(ThirdPartyPath, "generated");
-      var sourceDir = Path.Combine(ThirdPartyPath, "nats.c");
-
-      var arguments = " -G \"Unix Makefiles\"" +
-                      " -S " + sourceDir +
-                      " -B " + buildDirectory +
-                      " -DCMAKE_BUILD_TYPE=" + buildType +
-                      " -DCMAKE_INSTALL_PREFIX=" + installPath;
-
-      return CMakeProgram + arguments;
-    }
-
-    private string CreateCMakeInstallCommand(string buildDirectory,
-                                             string buildType)
-    {
-      return CMakeProgram + " --build " + buildDirectory +
-             " --target install --config " + buildType;
     }
 
     private bool BuildNats(ReadOnlyTargetRules Target)
     {
-      const string buildType = "Release";
+      Console.WriteLine("Executing " + NatsBuildScript);
 
-      var buildDirectory = "nats-build-" + buildType;
-      var buildPath = Path.Combine(ThirdPartyPath,
-                                   "generated",
-                                   buildDirectory);
+      var buildCode = ExecuteCommandSync(NatsBuildScript);
 
-      var configureCommand = CreateCMakeBuildCommand(buildPath,
-                                                     buildType);
-      var configureCode = ExecuteCommandSync(configureCommand);
-      Console.WriteLine("Configure command: " + configureCommand);
-
-      if (configureCode != 0)
+      if (buildCode != 0)
       {
         Console.WriteLine(
             "\nCannot configure CMake project. Exited with code: "
-            + configureCode);
-
-        //return false;
+            + buildCode);
+        return false;
       }
 
-      var installCommand = CreateCMakeInstallCommand(buildPath,
-                                                     buildType);
-      Console.WriteLine("Install command: " + installCommand);
-
-      var buildCode = ExecuteCommandSync(installCommand);
-      if (buildCode != 0)
-      {
-        Console.WriteLine("Cannot build project. Exited with code: " + buildCode);
-        //return false;
-      }
       return true;
     }
 
-    public int ExecuteCommandSync(object command)
+    public int ExecuteCommandSync(string command)
     {
       try
       {
-        // create the ProcessStartInfo using "cmd" as the program to be run,
-        // and "/c " as the parameters.
-        // Incidentally, /c tells cmd that we want it to execute the command that follows,
-        // and then exit.
         System.Diagnostics.ProcessStartInfo procStartInfo =
-            new System.Diagnostics.ProcessStartInfo("cmd", "/c " + command);
+            new System.Diagnostics.ProcessStartInfo(command);
+            // For Windows, it should be the following
+            // new System.Diagnostics.ProcessStartInfo("cmd", "/c " + command);
 
         // The following commands are needed to redirect the standard output.
         // This means that it will be redirected to the Process.StandardOutput StreamReader.
@@ -156,10 +86,67 @@ namespace UnrealBuildTool.Rules
       }
       catch (Exception objException)
       {
+
         // Log the exception
       }
       return 1;
     }
+
+
+    private string ModulePath
+    {
+      get { return ModuleDirectory; }
+    }
+
+    private string ThirdPartyPath
+    {
+      get
+      {
+        return Path.GetFullPath(Path.Combine(ModulePath,
+                                            "../../ThirdParty/"));
+      }
+    }
+
+    private string NatsPath
+    {
+      get
+      {
+        return Path.GetFullPath(Path.Combine(ThirdPartyPath, "nats"));
+      }
+    }
+    
+    private string NatsBuildScript
+    {
+      get
+      {
+        return Path.GetFullPath(Path.Combine(NatsPath, "BUILD.GBS.sh"));
+      }
+    }
+
+    private string NatsInstallPath
+    {
+      get
+      {
+        return Path.GetFullPath(Path.Combine(NatsPath, "Binaries"));
+      }
+    }
+
+    private string NatsIncludePath
+    {
+      get
+      {
+        return Path.GetFullPath(Path.Combine(NatsInstallPath, "include"));
+      }
+    }
+
+    private string NatsLibraryPath
+    {
+      get
+      {
+        return Path.GetFullPath(Path.Combine(NatsInstallPath, "lib"));
+      }
+    }
+
 
   }
 }

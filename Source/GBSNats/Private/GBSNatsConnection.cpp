@@ -2,6 +2,8 @@
 
 #include "GBSNatsSubscription.h"
 
+#include "nats/nats.h"
+
 UGBSNatsConnection::UGBSNatsConnection(const class FObjectInitializer& PCIP)
 	: Super(PCIP)
 {

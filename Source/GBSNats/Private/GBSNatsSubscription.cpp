@@ -10,10 +10,12 @@ void UGBSNatsSubscription::SetSubject(const FString &Subject)
   this->m_Subject = Subject;
 }
 
+#ifdef USE_NATS
 void UGBSNatsSubscription::SetConnection(natsConnection *nc)
 {
   this->natsConn = nc;
 }
+#endif
 
 void UGBSNatsSubscription::InternalOnMessage(const FString& Subject, const FString& Message)
 {

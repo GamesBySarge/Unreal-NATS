@@ -41,6 +41,8 @@ protected:
   UGBSNatsConnectionSettings* ConnectionSettings;
 
 private:
+#ifdef USE_NATS
   natsConnection *natsConn;
+#endif
 };
 

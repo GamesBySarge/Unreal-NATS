@@ -17,16 +17,16 @@ class GBSNATS_API UGBSNatsConnection : public UObject
   //////////////////////////////////////////////////////
   // The fun stuff goes here
 public:
-  UFUNCTION(BlueprintAuthorityOnly, BlueprintCallable, Category = "GBSNats|Message")
+  UFUNCTION(BlueprintAuthorityOnly, BlueprintCallable, Category = "GBSNats|PubSub")
   UGBSNatsSubscription* Subscribe(const FString& Subject);
 
-  UFUNCTION(BlueprintAuthorityOnly, BlueprintCallable, Category = "GBSNats|Message")
+  UFUNCTION(BlueprintAuthorityOnly, BlueprintCallable, Category = "GBSNats|PubSub")
   void Publish(const FString& Subject, const FString& Message);
 
-  UFUNCTION(BlueprintAuthorityOnly, BlueprintCallable, Category = "GBSNats|Message")
+  UFUNCTION(BlueprintAuthorityOnly, BlueprintCallable, Category = "GBSNats|ReqRep")
   FString RequestString(const FString& Subject, const FString& Request);
 
-  UFUNCTION(BlueprintAuthorityOnly, BlueprintCallable, Category = "GBSNats|Message")
+  UFUNCTION(BlueprintAuthorityOnly, BlueprintCallable, Category = "GBSNats|ReqRep")
   UGBSNatsSubscription* PublishRequestString(const FString& Subject, const FString& ReplySubject, const FString& Request);
 
   //////////////////////////////////////////////////////

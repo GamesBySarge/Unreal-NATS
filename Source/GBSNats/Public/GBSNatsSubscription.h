@@ -17,7 +17,7 @@ class GBSNATS_API UGBSNatsSubscription : public UObject
   //////////////////////////////////////////////////////
   // The fun stuff goes here
 public:
-  UPROPERTY(BlueprintAssignable, Category = "GBSNats|Event")
+  UPROPERTY(BlueprintAssignable, Category = "GBSNats|PubSub")
   FOnMessage OnMessage;
 
   //////////////////////////////////////////////////////

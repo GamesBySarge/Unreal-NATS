@@ -2,10 +2,12 @@
 
 #include "GBSNatsSubscription.h"
 
+#ifdef USE_NATS
 #include "nats/nats.h"
+#endif
 
-UGBSNatsConnection::UGBSNatsConnection(const class FObjectInitializer& PCIP)
-	: Super(PCIP)
+UGBSNatsConnection::UGBSNatsConnection(const class FObjectInitializer &PCIP)
+    : Super(PCIP)
 {
 }
 
@@ -16,15 +18,63 @@ void UGBSNatsConnection::SetSettings(UGBSNatsConnectionSettings *Settings)
 
 void UGBSNatsConnection::Connect()
 {
-  // TODO Probably should return an error of some sort.
+#ifdef USE_NATS
+  const char* connString = TCHAR_TO_ANSI(*this->ConnectionSettings->GetConnectionString());
+  natsConnection_ConnectTo(&this->natsConn, connString);
+#endif
 }
 
-UGBSNatsSubscription* UGBSNatsConnection::Subscribe(const FString& Subject)
+UGBSNatsSubscription *UGBSNatsConnection::Subscribe(const FString &Subject)
 {
-  auto sub = NewObject<UGBSNatsSubscription>(this);
+  UGBSNatsSubscription* sub = NewObject<UGBSNatsSubscription>(this);
 
-  // TODO set the subject
   sub->SetSubject(Subject);
+
+#ifdef USE_NATS
+  sub->SetConnection(this->natsConn);
+#endif
+
+  sub->DoSubscription();
+
+  return sub;
+}
+
+void UGBSNatsConnection::Publish(const FString& Subject, const FString& Message)
+{
+#ifdef USE_NATS
+  natsConnection_PublishString(this->natsConn, TCHAR_TO_ANSI(*Subject), TCHAR_TO_ANSI(*Message));
+#endif
+}
+
+FString UGBSNatsConnection::RequestString(const FString& Subject, const FString& Request)
+{
+  FString reply;
+#ifdef USE_NATS
+  natsMsg* msg;
+  // TODO Don't hard-code the timeout.
+  int64_t timeout = 1000;
+
+  auto s = natsConnection_RequestString(&msg, this->natsConn, TCHAR_TO_ANSI(*Subject), TCHAR_TO_ANSI(*Request), timeout);
+  if (s == NATS_OK)
+  {
+    std::string cstr(reinterpret_cast<const char*>(natsMsg_GetData(msg)), natsMsg_GetDataLength(msg));
+    reply = (cstr.c_str());
+    natsMsg_Destroy(msg);
+  }
+#endif
+
+  return reply;
+}
+
+UGBSNatsSubscription* UGBSNatsConnection::PublishRequestString(const FString& Subject, const FString& ReplySubject, const FString& Request)
+{
+  UGBSNatsSubscription* sub = NewObject<UGBSNatsSubscription>(this);
+
+  sub->SetSubject(ReplySubject);
+
+#ifdef USE_NATS
+  natsConnection_PublishRequestString(this->natsConn, TCHAR_TO_ANSI(*Subject), TCHAR_TO_ANSI(*ReplySubject), TCHAR_TO_ANSI(*Request));
+#endif
 
   return sub;
 }

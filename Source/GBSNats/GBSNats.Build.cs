@@ -38,6 +38,7 @@ namespace UnrealBuildTool.Rules
         Definitions.Add("USE_NATS");
         PublicIncludePaths.Add(NatsIncludePath);
         PublicAdditionalLibraries.Add(NatsLibraryPath + "/libnats_static.a");
+        PublicAdditionalLibraries.Add("/usr/lib/x86_64-linux-gnu/libprotobuf-c.a");
       }
     }
 

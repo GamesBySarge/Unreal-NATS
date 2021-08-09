@@ -2,7 +2,12 @@
 
 #include "GBSNatsConnectionSettings.h"
 
+#ifdef USE_NATS
+#include "nats/nats.h"
+#endif
+
 #include "GBSNatsConnection.generated.h"
+
 
 UCLASS(BlueprintType, Blueprintable)
 class GBSNATS_API UGBSNatsConnection : public UObject
@@ -12,8 +17,17 @@ class GBSNATS_API UGBSNatsConnection : public UObject
   //////////////////////////////////////////////////////
   // The fun stuff goes here
 public:
-  UFUNCTION(BlueprintAuthorityOnly, BlueprintCallable, Category = "GBSNats|Connection")
+  UFUNCTION(BlueprintAuthorityOnly, BlueprintCallable, Category = "GBSNats|Message")
   UGBSNatsSubscription* Subscribe(const FString& Subject);
+
+  UFUNCTION(BlueprintAuthorityOnly, BlueprintCallable, Category = "GBSNats|Message")
+  void Publish(const FString& Subject, const FString& Message);
+
+  UFUNCTION(BlueprintAuthorityOnly, BlueprintCallable, Category = "GBSNats|Message")
+  FString RequestString(const FString& Subject, const FString& Request);
+
+  UFUNCTION(BlueprintAuthorityOnly, BlueprintCallable, Category = "GBSNats|Message")
+  UGBSNatsSubscription* PublishRequestString(const FString& Subject, const FString& ReplySubject, const FString& Request);
 
   //////////////////////////////////////////////////////
   // Internal use only, not exposed to blueprints.
@@ -25,5 +39,8 @@ protected:
 
   UPROPERTY()
   UGBSNatsConnectionSettings* ConnectionSettings;
+
+private:
+  natsConnection *natsConn;
 };
 

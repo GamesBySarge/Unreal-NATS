@@ -17,6 +17,11 @@ public:
   UFUNCTION(BlueprintAuthorityOnly, BlueprintCallable, Category = "GBSNats|Connection")
   void AddServer(const FString& Server);
 
+  /////////////////////////////////////////////////////
+  // Internal C++ stuff, not used by blueprints
+public:
+  FString GetConnectionString();
+
 private:
   TArray<FString> Servers;
 };

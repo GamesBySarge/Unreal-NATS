@@ -16,7 +16,8 @@ namespace UnrealBuildTool.Rules
 
           new string[] {
           "GBSNats/Private",
-          "../ThirdParty/nats/Binaries/include"
+          "../ThirdParty/nats/Binaries/include",
+          NatsIncludePath
             // ... add other private include paths required here ...
           });
 
@@ -37,8 +38,8 @@ namespace UnrealBuildTool.Rules
         BuildNats(Target);
         Definitions.Add("USE_NATS");
         PublicIncludePaths.Add(NatsIncludePath);
-        PublicAdditionalLibraries.Add(NatsLibraryPath + "/libnats_static.a");
-        PublicAdditionalLibraries.Add("/usr/lib/x86_64-linux-gnu/libprotobuf-c.a");
+        PublicAdditionalLibraries.Add(NatsLibraryPath + "/libnats.so");
+        PublicAdditionalLibraries.Add("/usr/lib/x86_64-linux-gnu/libprotobuf-c.so");        
       }
     }
 

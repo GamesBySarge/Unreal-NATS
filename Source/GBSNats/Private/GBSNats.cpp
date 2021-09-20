@@ -6,6 +6,8 @@
 
 #define LOCTEXT_NAMESPACE "FGBSNatsModule"
 
+DEFINE_LOG_CATEGORY(LogGBSNats);
+
 void FGBSNatsModule::StartupModule()
 {
 }

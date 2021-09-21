@@ -4,9 +4,9 @@
 
 #ifdef USE_NATS
 #include "nats/nats.h"
+#include <string.h>
 #endif
 
-GBSNATS_API DECLARE_LOG_CATEGORY_EXTERN(LogGBSNats, Log, All);
 
 UGBSNatsConnection::UGBSNatsConnection(const class FObjectInitializer &PCIP)
     : Super(PCIP)
@@ -23,14 +23,14 @@ void UGBSNatsConnection::Connect()
 #ifdef USE_NATS
   natsStatus s = NATS_OK;
 
-  const char* connString = TCHAR_TO_ANSI(*this->ConnectionSettings->GetConnectionString());
-  UE_LOG(LogGBSNats, Log, TEXT("Connecting to %s"), connString);
+  FString ConnectionString = *this->ConnectionSettings->GetConnectionString();
+  UE_LOG(LogGBSNats, Log, TEXT("Connecting to %s"), *ConnectionString);
 
-  s = natsConnection_ConnectTo(&this->natsConn, connString);
+  s = natsConnection_ConnectTo(&this->natsConn, TCHAR_TO_ANSI(*ConnectionString));
   if (s != NATS_OK)
   {
-      UE_LOG(LogGBSNats, Log, TEXT("Error connecting to %s: %s"), connString, natsStatus_GetText(s));
-      
+      FString ErrorMessage = ANSI_TO_TCHAR(natsStatus_GetText(s));
+      UE_LOG(LogGBSNats, Log, TEXT("Error connecting to %s: %s"), *ConnectionString, *ErrorMessage);
   }
 #endif
 }
@@ -45,7 +45,7 @@ UGBSNatsSubscription *UGBSNatsConnection::Subscribe(const FString &Subject)
   sub->SetConnection(this->natsConn);
 #endif
 
-  sub->DoSubscription();
+  sub->DoSubscription(Subject);
 
   return sub;
 }

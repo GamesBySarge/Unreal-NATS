@@ -2,6 +2,8 @@
 
 #include "Modules/ModuleManager.h"
 
+DECLARE_LOG_CATEGORY_EXTERN(LogGBSNats, Log, All);
+
 class UGBSNatsSettings;
 
 class FGBSNatsModule : public IModuleInterface

@@ -1,4 +1,5 @@
 #include "GBSNatsSubscription.h"
+#include <string.h>
 
 UGBSNatsSubscription::UGBSNatsSubscription(const class FObjectInitializer &PCIP)
     : Super(PCIP)
@@ -31,15 +32,26 @@ void onMsg(natsConnection* nc, natsSubscription* sub, natsMsg* msg, void* closur
   FString message = (cstr.c_str());
   FString subject = natsMsg_GetSubject(msg);
 
+  UE_LOG(LogGBSNats, Log, TEXT("%s : %s"), *subject, *message);
+
   _this->InternalOnMessage(subject, message);
   natsMsg_Destroy(msg);
 }
 #endif
 
-void UGBSNatsSubscription::DoSubscription()
+void UGBSNatsSubscription::DoSubscription(const FString& subject)
 {
 #ifdef USE_NATS
-  natsConnection_Subscribe(&this->natsSub, this->natsConn, "foo", onMsg, (void *)this);
+  UE_LOG(LogGBSNats, Log, TEXT("Subscribing to \"%s\""), *subject);
+
+  natsStatus s = NATS_OK;
+  s = natsConnection_Subscribe(&this->natsSub, this->natsConn, TCHAR_TO_ANSI(*subject), onMsg, (void *)this);
+  if (s != NATS_OK)
+  {
+      FString ErrorMessage = ANSI_TO_TCHAR(natsStatus_GetText(s));
+      UE_LOG(LogGBSNats, Log, TEXT("Error subscribing to %s: %s"), *subject, *ErrorMessage);
+  }
+
 #endif
 }
 

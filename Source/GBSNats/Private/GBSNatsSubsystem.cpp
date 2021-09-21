@@ -28,5 +28,6 @@ UGBSNatsConnection* UGBSNatsSubsystem::CreateConnection(UGBSNatsConnectionSettin
 {
   UGBSNatsConnection* NewValue = NewObject<UGBSNatsConnection>(this);
   NewValue->SetSettings(ConnectionSettings);
+  NewValue->Connect();
   return NewValue;
 }

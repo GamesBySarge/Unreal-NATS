@@ -28,7 +28,7 @@ public:
 #endif
 
   void SetSubject(const FString& Subject);
-  void DoSubscription();
+  void DoSubscription(const FString& subject);
   void InternalOnMessage(const FString& Subject, const FString& Message);
 
 private:

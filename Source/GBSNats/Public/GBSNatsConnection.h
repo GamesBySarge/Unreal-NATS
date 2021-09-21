@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GBSNatsConnectionSettings.h"
+#include "GBSNatsSubscription.h"
 
 #ifdef USE_NATS
 #include "nats/nats.h"
@@ -18,7 +19,7 @@ class GBSNATS_API UGBSNatsConnection : public UObject
   // The fun stuff goes here
 public:
   UFUNCTION(BlueprintAuthorityOnly, BlueprintCallable, Category = "GBSNats|PubSub")
-  UGBSNatsSubscription* Subscribe(const FString& Subject);
+  UGBSNatsSubscription* Subscribe(const FString& Subject, const FOnMessage& OnMessage);
 
   UFUNCTION(BlueprintAuthorityOnly, BlueprintCallable, Category = "GBSNats|PubSub")
   void Publish(const FString& Subject, const FString& Message);

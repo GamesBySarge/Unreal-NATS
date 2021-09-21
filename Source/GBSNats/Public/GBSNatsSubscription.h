@@ -7,7 +7,7 @@
 #include "GBSNatsSubscription.generated.h"
 
 /** Generate a delegate for callback events */
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnMessage, FString, Subject, FString, Message);
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnMessage, FString, Subject, FString, Message);
 
 UCLASS(BlueprintType, Blueprintable)
 class GBSNATS_API UGBSNatsSubscription : public UObject
@@ -17,8 +17,8 @@ class GBSNATS_API UGBSNatsSubscription : public UObject
   //////////////////////////////////////////////////////
   // The fun stuff goes here
 public:
-  UPROPERTY(BlueprintAssignable, Category = "GBSNats|PubSub")
-  FOnMessage OnMessage;
+  UFUNCTION(BlueprintAuthorityOnly, BlueprintCallable, Category = "GBSNats|PubSub")
+  void Unsubscribe();
 
   //////////////////////////////////////////////////////
   // Internal use only, not exposed to blueprints.
@@ -28,11 +28,18 @@ public:
 #endif
 
   void SetSubject(const FString& Subject);
+  void SetDelegate(const FOnMessage& Delegate);
+
   void DoSubscription(const FString& subject);
   void InternalOnMessage(const FString& Subject, const FString& Message);
 
+  //////////////////////////////////////////////////////
+  // 'Structors
+  virtual ~UGBSNatsSubscription();
+
 private:
   FString m_Subject;
+  FOnMessage OnMessage;
 #ifdef USE_NATS
   natsConnection* natsConn;
   natsSubscription* natsSub;

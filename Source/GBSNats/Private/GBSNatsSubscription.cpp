@@ -6,9 +6,32 @@ UGBSNatsSubscription::UGBSNatsSubscription(const class FObjectInitializer &PCIP)
 {
 }
 
+UGBSNatsSubscription::~UGBSNatsSubscription()
+{
+#ifdef USE_NATS
+  this->Unsubscribe();
+#endif
+}
+
 void UGBSNatsSubscription::SetSubject(const FString &Subject)
 {
   this->m_Subject = Subject;
+}
+
+void UGBSNatsSubscription::SetDelegate(const FOnMessage &Delegate)
+{
+  this->OnMessage = Delegate;
+}
+
+void UGBSNatsSubscription::Unsubscribe()
+{
+#ifdef USE_NATS
+  if (this->natsSub != nullptr)
+  {
+      natsSubscription_Unsubscribe(this->natsSub);
+      this->natsSub = nullptr;
+  }
+#endif
 }
 
 #ifdef USE_NATS
@@ -20,7 +43,7 @@ void UGBSNatsSubscription::SetConnection(natsConnection *nc)
 
 void UGBSNatsSubscription::InternalOnMessage(const FString& Subject, const FString& Message)
 {
-  this->OnMessage.Broadcast(Subject, Message);
+  this->OnMessage.ExecuteIfBound(Subject, Message);
 }
 
 #ifdef USE_NATS

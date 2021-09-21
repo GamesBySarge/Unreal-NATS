@@ -35,11 +35,12 @@ void UGBSNatsConnection::Connect()
 #endif
 }
 
-UGBSNatsSubscription *UGBSNatsConnection::Subscribe(const FString &Subject)
+UGBSNatsSubscription *UGBSNatsConnection::Subscribe(const FString& Subject, const FOnMessage& OnMessage)
 {
   UGBSNatsSubscription* sub = NewObject<UGBSNatsSubscription>(this);
 
   sub->SetSubject(Subject);
+  sub->SetDelegate(OnMessage);
 
 #ifdef USE_NATS
   sub->SetConnection(this->natsConn);

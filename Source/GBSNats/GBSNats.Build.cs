@@ -46,8 +46,11 @@ namespace UnrealBuildTool.Rules
         BuildNats(Target);
         Definitions.Add("USE_NATS");
         PublicIncludePaths.Add(NatsIncludePath);
-        PublicAdditionalLibraries.Add(NatsLibraryPath + "/nats.lib");
-        //PublicAdditionalLibraries.Add(NatsLibraryPath + "/protobuf-c.lib");
+        PublicAdditionalLibraries.Add(NatsLibraryPath + "/nats_static.lib");
+        PublicAdditionalLibraries.Add(NatsLibraryPath + "/protobuf-c.lib");
+		string vcpkgPath = "D:/vcpkg/installed/x64-windows/lib";
+		PublicAdditionalLibraries.Add(vcpkgPath + "/libcrypto.lib");
+		PublicAdditionalLibraries.Add(vcpkgPath + "/libssl.lib");
 	  }
     }
 

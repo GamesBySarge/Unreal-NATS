@@ -3,3 +3,6 @@
 	url = https://github.com/nats-io/nats.c.git
 	branch = main
   update = merge
+[submodule "ThirdParty/nats/protobuf-c"]
+	path = ThirdParty/nats/protobuf-c
+	url = https://github.com/GamesBySarge/protobuf-c.git

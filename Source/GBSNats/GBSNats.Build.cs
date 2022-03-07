@@ -33,7 +33,7 @@ namespace UnrealBuildTool.Rules
 				});
 
       // Only build Nats if the target platform is Unix
-      if (Target.IsInPlatformGroup(UnrealPlatformGroup.Unix))
+      if (IsUnix)
       {
         BuildNats(Target);
         Definitions.Add("USE_NATS");
@@ -41,6 +41,14 @@ namespace UnrealBuildTool.Rules
         PublicAdditionalLibraries.Add(NatsLibraryPath + "/libnats.so");
         PublicAdditionalLibraries.Add("/usr/lib/x86_64-linux-gnu/libprotobuf-c.so");        
       }
+	  else
+	  {
+        BuildNats(Target);
+        Definitions.Add("USE_NATS");
+        PublicIncludePaths.Add(NatsIncludePath);
+        PublicAdditionalLibraries.Add(NatsLibraryPath + "/nats.lib");
+        //PublicAdditionalLibraries.Add(NatsLibraryPath + "/protobuf-c.lib");
+	  }
     }
 
     private bool BuildNats(ReadOnlyTargetRules Target)
@@ -64,11 +72,17 @@ namespace UnrealBuildTool.Rules
     {
       try
       {
-        System.Diagnostics.ProcessStartInfo procStartInfo =
-            new System.Diagnostics.ProcessStartInfo(command);
+        System.Diagnostics.ProcessStartInfo procStartInfo;
+		if (IsUnix) 
+		{
+			procStartInfo = new System.Diagnostics.ProcessStartInfo(command);
+		}
+		else
+		{
             // For Windows, it should be the following
-            // new System.Diagnostics.ProcessStartInfo("cmd", "/c " + command);
-
+            procStartInfo = new System.Diagnostics.ProcessStartInfo("cmd", "/c " + command);
+		}
+		
         // The following commands are needed to redirect the standard output.
         // This means that it will be redirected to the Process.StandardOutput StreamReader.
         procStartInfo.RedirectStandardOutput = true;
@@ -94,6 +108,10 @@ namespace UnrealBuildTool.Rules
       return 1;
     }
 
+	private bool IsUnix
+	{ 
+	  get { return Target.IsInPlatformGroup(UnrealPlatformGroup.Unix); }
+	}
 
     private string ModulePath
     {
@@ -121,7 +139,14 @@ namespace UnrealBuildTool.Rules
     {
       get
       {
-        return Path.GetFullPath(Path.Combine(NatsPath, "BUILD.GBS.sh"));
+		if (IsUnix)
+		{
+			return Path.GetFullPath(Path.Combine(NatsPath, "BUILD.GBS.sh"));
+		}
+		else
+		{
+			return Path.GetFullPath(Path.Combine(NatsPath, "BUILD.GBS.bat"));
+		}
       }
     }
 

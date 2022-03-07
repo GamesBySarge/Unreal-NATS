@@ -18,6 +18,10 @@ namespace UnrealBuildTool.Rules
 
         // PrivateDependencyModuleNames.Add("SSL");
       }
+	  else
+	  {
+        BuildNats(Target);
+	  }
     }
 
     private string ThirdPartyPath

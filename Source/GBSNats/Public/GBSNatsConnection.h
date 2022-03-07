@@ -1,5 +1,12 @@
 #pragma once
 
+#if PLATFORM_WINDOWS
+#ifdef USE_NATS
+#include "Windows/AllowWindowsPlatformTypes.h"
+#include "Windows/prewindowsapi.h"
+#endif // USE_NATS
+#endif // PLATFORM_WINDOWS
+
 #include "GBSNatsConnectionSettings.h"
 #include "GBSNatsSubscription.h"
 
@@ -47,3 +54,9 @@ private:
 #endif
 };
 
+#if PLATFORM_WINDOWS
+#ifdef USE_NATS
+#include "Windows/PostWindowsApi.h"
+#include "Windows/HideWindowsPlatformTypes.h"
+#endif // USE_NATS
+#endif // PLATFORM_WINDOWS

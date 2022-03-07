@@ -24,3 +24,4 @@ OpenSSL
 
 ```
 .\vcpkg install openssl:x64-windows
+\vcpkg\vcpkg install protobuf:x64-windows

@@ -32,7 +32,6 @@ namespace UnrealBuildTool.Rules
 					// ... add other public dependencies that you statically link with here ...
 				});
 
-      // Only build Nats if the target platform is Unix
       if (IsUnix)
       {
         BuildNats(Target);
@@ -40,7 +39,7 @@ namespace UnrealBuildTool.Rules
         PublicIncludePaths.Add(NatsIncludePath);
         PublicAdditionalLibraries.Add(NatsLibraryPath + "/libnats.so");
         PublicAdditionalLibraries.Add("/usr/lib/x86_64-linux-gnu/libprotobuf-c.so");        
-      }
+      }	  
 	  else
 	  {
         BuildNats(Target);
@@ -72,15 +71,16 @@ namespace UnrealBuildTool.Rules
     {
       try
       {
+		string args = GBSNatsPath;
         System.Diagnostics.ProcessStartInfo procStartInfo;
 		if (IsUnix) 
 		{
-			procStartInfo = new System.Diagnostics.ProcessStartInfo(command);
+			procStartInfo = new System.Diagnostics.ProcessStartInfo(command, args);
 		}
 		else
 		{
             // For Windows, it should be the following
-            procStartInfo = new System.Diagnostics.ProcessStartInfo("cmd", "/c " + command);
+            procStartInfo = new System.Diagnostics.ProcessStartInfo("cmd", "/c " + command + " " + args);
 		}
 		
         // The following commands are needed to redirect the standard output.
@@ -126,6 +126,15 @@ namespace UnrealBuildTool.Rules
                                             "../../ThirdParty/"));
       }
     }
+	
+	private string GBSNatsPath
+	{
+      get
+      {
+        return Path.GetFullPath(Path.Combine(ModulePath,
+                                            "../.."));
+      }
+	}
 
     private string NatsPath
     {

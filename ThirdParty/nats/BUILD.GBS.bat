@@ -3,7 +3,11 @@
 echo Building NATS dependencies
 
 REM TODO Get this from the environment or command-line
-set BASE_DIR=D:\fu\Plugins\GBSNats
+rem set BASE_DIR=D:\fu\Plugins\GBSNats
+set BASE_DIR=%1
+
+echo BASE_DIR is %1
+
 set SCRIPT_DIR=%BASE_DIR%\ThirdParty\nats
 set BUILD_TYPE=Release
 
@@ -43,5 +47,5 @@ popd
 
 echo Copying editor libraries
 
-copy %INSTALL_DIR%\bin\*.dll %BASE_DIR%\Binaries\Win64
-copy %INSTALL_DIR%\lib\*.dll %BASE_DIR%\Binaries\Win64
+rem copy %INSTALL_DIR%\bin\*.dll %BASE_DIR%\Binaries\Win64
+rem copy %INSTALL_DIR%\lib\*.dll %BASE_DIR%\Binaries\Win64

@@ -4,7 +4,7 @@
 
 #ifdef USE_NATS
 #include "nats/nats.h"
-#include <string.h>
+#include <string>
 #endif
 
 

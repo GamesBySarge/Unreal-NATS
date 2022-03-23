@@ -1,5 +1,5 @@
 #include "GBSNatsSubscription.h"
-#include <string.h>
+#include <string>
 
 UGBSNatsSubscription::UGBSNatsSubscription(const class FObjectInitializer &PCIP)
     : Super(PCIP)

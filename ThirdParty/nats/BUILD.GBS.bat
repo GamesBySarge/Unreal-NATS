@@ -2,8 +2,6 @@
 
 echo Building NATS dependencies
 
-REM TODO Get this from the environment or command-line
-rem set BASE_DIR=D:\fu\Plugins\GBSNats
 set BASE_DIR=%1
 
 echo BASE_DIR is %1

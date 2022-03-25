@@ -41,6 +41,9 @@ public:
   natsOptions* GetOptions();
 
 private:
+  const char** ConvertServers();
+
+private:
   TArray<FString> Servers;
   natsOptions* opts;
 };

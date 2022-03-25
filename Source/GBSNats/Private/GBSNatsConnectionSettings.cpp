@@ -1,5 +1,7 @@
 #include "GBSNatsConnectionSettings.h"
 
+#include <vector>
+
 UGBSNatsConnectionSettings::UGBSNatsConnectionSettings(const class FObjectInitializer& PCIP)
 	: Super(PCIP)
 {
@@ -32,5 +34,9 @@ FString UGBSNatsConnectionSettings::GetConnectionString()
 
 natsOptions* UGBSNatsConnectionSettings::GetOptions()
 {
+  FString ConnectionString = *this->GetConnectionString();
+  UE_LOG(LogGBSNats, Log, TEXT("Connecting to %s"), *ConnectionString);
+
+  natsOptions_SetURL(this->opts, TCHAR_TO_ANSI(*ConnectionString));
   return this->opts;
 }

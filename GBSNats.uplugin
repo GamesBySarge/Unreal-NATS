@@ -3,8 +3,8 @@
 	
 	"FriendlyName" : "GBSNats",
 	"Version" : 1,
-	"VersionName" : "0.1.2",
-	"CreatedBy" : "SgtFlame",
+	"VersionName" : "0.1.3",
+	"CreatedBy" : "Tony Richards",
 	"CreatedByURL" : "https://github.com/SgtFlame",
 	"EngineVersion" : "4.27",
 	"Description" : "NATS.io integration",

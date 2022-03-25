@@ -2,10 +2,8 @@
 
 #include "GBSNatsSubscription.h"
 
-#ifdef USE_NATS
 #include "nats/nats.h"
 #include <string>
-#endif
 
 
 UGBSNatsConnection::UGBSNatsConnection(const class FObjectInitializer &PCIP)
@@ -20,19 +18,14 @@ void UGBSNatsConnection::SetSettings(UGBSNatsConnectionSettings *Settings)
 
 void UGBSNatsConnection::Connect()
 {
-#ifdef USE_NATS
   natsStatus s = NATS_OK;
 
-  FString ConnectionString = *this->ConnectionSettings->GetConnectionString();
-  UE_LOG(LogGBSNats, Log, TEXT("Connecting to %s"), *ConnectionString);
-
-  s = natsConnection_ConnectTo(&this->natsConn, TCHAR_TO_ANSI(*ConnectionString));
+  s = natsConnection_Connect(&this->natsConn, this->ConnectionSettings->GetOptions());
   if (s != NATS_OK)
   {
       FString ErrorMessage = ANSI_TO_TCHAR(natsStatus_GetText(s));
-      UE_LOG(LogGBSNats, Log, TEXT("Error connecting to %s: %s"), *ConnectionString, *ErrorMessage);
+      UE_LOG(LogGBSNats, Log, TEXT("Error connecting to nats server: %s"), *ErrorMessage);
   }
-#endif
 }
 
 UGBSNatsSubscription *UGBSNatsConnection::Subscribe(const FString& Subject, const FOnMessage& OnMessage)
@@ -42,9 +35,7 @@ UGBSNatsSubscription *UGBSNatsConnection::Subscribe(const FString& Subject, cons
   sub->SetSubject(Subject);
   sub->SetDelegate(OnMessage);
 
-#ifdef USE_NATS
   sub->SetConnection(this->natsConn);
-#endif
 
   sub->DoSubscription(Subject);
 
@@ -53,15 +44,13 @@ UGBSNatsSubscription *UGBSNatsConnection::Subscribe(const FString& Subject, cons
 
 void UGBSNatsConnection::Publish(const FString& Subject, const FString& Message)
 {
-#ifdef USE_NATS
   natsConnection_PublishString(this->natsConn, TCHAR_TO_ANSI(*Subject), TCHAR_TO_ANSI(*Message));
-#endif
 }
 
 FString UGBSNatsConnection::RequestString(const FString& Subject, const FString& Request)
 {
   FString reply;
-#ifdef USE_NATS
+
   natsMsg* msg;
   // TODO Don't hard-code the timeout.
   int64_t timeout = 1000;
@@ -73,7 +62,6 @@ FString UGBSNatsConnection::RequestString(const FString& Subject, const FString&
     reply = (cstr.c_str());
     natsMsg_Destroy(msg);
   }
-#endif
 
   return reply;
 }
@@ -84,9 +72,7 @@ UGBSNatsSubscription* UGBSNatsConnection::PublishRequestString(const FString& Su
 
   sub->SetSubject(ReplySubject);
 
-#ifdef USE_NATS
   natsConnection_PublishRequestString(this->natsConn, TCHAR_TO_ANSI(*Subject), TCHAR_TO_ANSI(*ReplySubject), TCHAR_TO_ANSI(*Request));
-#endif
 
   return sub;
 }

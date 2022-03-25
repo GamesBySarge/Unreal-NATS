@@ -3,10 +3,10 @@
 	
 	"FriendlyName" : "GBSNats",
 	"Version" : 1,
-	"VersionName" : "0.1-r1",
+	"VersionName" : "0.1.1",
 	"CreatedBy" : "SgtFlame",
 	"CreatedByURL" : "https://github.com/SgtFlame",
-	"EngineVersion" : "5.0.0",
+	"EngineVersion" : "4.27",
 	"Description" : "NATS.io integration",
 	"Category" : "Network",
 	"DocsURL": "https://github.com/GamesBySarge/Unreal-NATS/blob/main/README.md",

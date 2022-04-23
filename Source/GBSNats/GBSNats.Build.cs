@@ -32,22 +32,36 @@ namespace UnrealBuildTool.Rules
 					// ... add other public dependencies that you statically link with here ...
 				});
 
-      if (IsUnix)
+        if (IsUnix)
+        {
+          BuildNats(Target);
+          PublicDefinitions.Add("USE_NATS");
+          PublicIncludePaths.Add(NatsIncludePath);
+          PublicAdditionalLibraries.Add(NatsLibraryPath + "/libnats.so");
+          PublicAdditionalLibraries.Add("/usr/lib/x86_64-linux-gnu/libprotobuf-c.so");        
+        }	  
+      else
       {
-        BuildNats(Target);
-        Definitions.Add("USE_NATS");
-        PublicIncludePaths.Add(NatsIncludePath);
-        PublicAdditionalLibraries.Add(NatsLibraryPath + "/libnats.so");
-        PublicAdditionalLibraries.Add("/usr/lib/x86_64-linux-gnu/libprotobuf-c.so");        
-      }	  
-	  else
-	  {
-        BuildNats(Target);
-        Definitions.Add("USE_NATS");
-        PublicIncludePaths.Add(NatsIncludePath);
-        PublicAdditionalLibraries.Add(NatsLibraryPath + "/nats.lib");
-        //PublicAdditionalLibraries.Add(NatsLibraryPath + "/protobuf-c.lib");
-	  }
+          BuildNats(Target);
+          PublicDefinitions.Add("USE_NATS");
+          PublicIncludePaths.Add(NatsIncludePath);
+          PublicAdditionalLibraries.Add(NatsLibraryPath + "/nats.lib");
+          CopyToBinaries(ProtobufCDLLPath);
+          CopyToBinaries(NatsDLLPath);
+          //PublicAdditionalLibraries.Add(NatsLibraryPath + "/protobuf-c.lib");
+      }
+    }
+    private void CopyToBinaries(string FilePath)
+    {
+      string binariesDir = Path.Combine(ProjectRoot, "Binaries", Target.Platform.ToString());
+      string filename = Path.GetFileName(FilePath);
+
+        if (!Directory.Exists(binariesDir))
+            Directory.CreateDirectory(binariesDir);
+
+        if (!File.Exists(Path.Combine(binariesDir, filename)))
+            File.Copy(FilePath, Path.Combine(binariesDir, filename), true);    
+
     }
 
     private bool BuildNats(ReadOnlyTargetRules Target)
@@ -71,7 +85,7 @@ namespace UnrealBuildTool.Rules
     {
       try
       {
-		string args = GBSNatsPath;
+		string args = GBSNatsPath + " " + BinaryOutputDir;
         System.Diagnostics.ProcessStartInfo procStartInfo;
 		if (IsUnix) 
 		{
@@ -108,10 +122,31 @@ namespace UnrealBuildTool.Rules
       return 1;
     }
 
-	private bool IsUnix
-	{ 
-	  get { return Target.IsInPlatformGroup(UnrealPlatformGroup.Unix); }
-	}
+
+    private bool IsUnix
+    { 
+      get { return Target.IsInPlatformGroup(UnrealPlatformGroup.Unix); }
+    }
+
+    private string BinaryOutputDir
+    {
+      get
+      {
+        return System.IO.Path.GetFullPath(
+          System.IO.Path.Combine(ModuleDirectory, "../../../../Binaries/Win64")
+        );
+      }
+    }
+
+    private string ProjectRoot
+    {
+      get
+      {
+        return System.IO.Path.GetFullPath(
+          System.IO.Path.Combine(ModuleDirectory, "../../../../")
+        );
+      }
+    }
 
     private string ModulePath
     {
@@ -183,6 +218,22 @@ namespace UnrealBuildTool.Rules
       }
     }
 
+    private string ProtobufCDLLPath
+    {
+      get
+      {
+        return Path.GetFullPath(Path.Combine(NatsInstallPath, "bin", "protobuf-c.dll"));
+      }
+    }
+
+
+    private string NatsDLLPath
+    {
+      get
+      {
+        return Path.GetFullPath(Path.Combine(NatsInstallPath, "lib", "nats.dll"));
+      }
+    }
 
   }
 }
